@@ -130,7 +130,7 @@
 
 ![image](https://github.com/Huang-Cc/Driving-safety-analysis/blob/master/00003.png)
 
-将训练集中的死亡率![](https://latex.codecogs.com/gif.latex?%5Chat%20%5Ctheta_%7Bdead%7D%3D%5Cfrac%7Bn_%7Bdead%3D1%7D%7D%7Bn%7D)作为阈值![](https://latex.codecogs.com/gif.latex?%5Cpi_0),带入测试集的数据到模型中获得预测值并对其进行分类，得到以下分类表：
+&emsp;&emsp;将训练集中的死亡率![](https://latex.codecogs.com/gif.latex?%5Chat%20%5Ctheta_%7Bdead%7D%3D%5Cfrac%7Bn_%7Bdead%3D1%7D%7D%7Bn%7D)作为阈值![](https://latex.codecogs.com/gif.latex?%5Cpi_0),带入测试集的数据到模型中获得预测值并对其进行分类，得到以下分类表：
 
 |&nbsp;|&nbsp;|![](https://latex.codecogs.com/gif.latex?%5Chat%20y)|
 | ---- | ---- | ---- |
