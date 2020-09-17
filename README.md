@@ -56,9 +56,8 @@
 
 ![image](https://github.com/Huang-Cc/Driving-safety-analysis/blob/master/00001.png)
 
-&emsp;&emsp;表格反映了逐步添加变量的具体过程，ROC图也可以直观地说明每一次变量选择对模型AUC的影响。可以看到，在加入变量V, ageOFocc, frontal后，模型的AUC从初始模型的0.6404提高到了0.8791，但是在最后的两个变量gender和occRole并没有使模型的AUC提升很多(<0.001)，出于对模型简洁性和可解释性，我没有选择将他们加入到模型中。 所以最终通过AUC指标选择得到的模型为
-
-![](https://latex.codecogs.com/gif.latex?Logit[\hat&space;P(dead=1)]=\alpha&plus;\beta_1&space;S&plus;\beta_2&space;DP&plus;\beta_3&space;V&plus;\beta_4&space;AGE&plus;\beta_5&space;F)<br>
+&emsp;&emsp;表格反映了逐步添加变量的具体过程，ROC图也可以直观地说明每一次变量选择对模型AUC的影响。可以看到，在加入变量V, ageOFocc, frontal后，模型的AUC从初始模型的0.6404提高到了0.8791，但是在最后的两个变量gender和occRole并没有使模型的AUC提升很多(<0.001)，出于对模型简洁性和可解释性，我没有选择将他们加入到模型中。 所以最终通过AUC指标选择得到的模型为<br>
+![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D%5Calpha%26plus%3B%5Cbeta_1%26space%3BS%26plus%3B%5Cbeta_2%26space%3BDP%26plus%3B%5Cbeta_3%26space%3BV%26plus%3B%5Cbeta_4%26space%3BAGE%26plus%3B%5Cbeta_5%26space%3BF)<br>
 (模型中S表示seatbelt，DP表示deploy，AGE表示ageOfocc，F表示frontal，下同。)<br>
 &emsp;&emsp;该模型中参数估计与显著性如下:
 
@@ -67,21 +66,69 @@
 
 
 
-&emsp;&emsp;可以看到所有变量的p值都远小于0.05，在模型中都是显著的。所以对应的模型为
+&emsp;&emsp;可以看到所有变量的p值都远小于0.05，在模型中都是显著的。所以对应的模型为<br>
+![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D-10.182-1.319S%26plus%3B0.348DP%26plus%3B1.709V%26plus%3B0.032AGE-1.060F)<br>
 
-![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=-10.182-1.319S&plus;0.348DP&plus;1.709V&plus;0.032AGE-1.060F)<br>
-
-&emsp;&emsp;接下来继续扩充模型，添加变量间的交互效应项，观察变量显著性和模型拟合情况。考虑到安全带与气囊展开时可能的共同作用，尝试在模型中加入撞击速度seatbelt与deploy的交互项
-
-![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=\alpha&plus;\beta_1&space;S&plus;\beta_2&space;DP&plus;\beta_3&space;V&plus;\beta_4&space;AGE&plus;\beta_5&space;F&plus;\gamma(S\cdot&space;DP))<br>
+&emsp;&emsp;接下来继续扩充模型，添加变量间的交互效应项，观察变量显著性和模型拟合情况。考虑到安全带与气囊展开时可能的共同作用，尝试在模型中加入撞击速度seatbelt与deploy的交互项<br>
+![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D%5Calpha%26plus%3B%5Cbeta_1%26space%3BS%26plus%3B%5Cbeta_2%26space%3BDP%26plus%3B%5Cbeta_3%26space%3BV%26plus%3B%5Cbeta_4%26space%3BAGE%26plus%3B%5Cbeta_5%26space%3BF%26plus%3B%5Cgamma%28S%5Ccdot%26space%3BDP%29)<br>
 模型变量显著性如下：
 
 
 
 
 
-&emsp;&emsp;所有的变量都是显著的。模型拟合结果为：
-
-![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=-10.254-1.177S&plus;0.576D&plus;1.715V&plus;0.032A-1.059F-0.499(S\cdot&space;D))<br>
+&emsp;&emsp;所有的变量都是显著的。模型拟合结果为：<br>
+![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D-10.254-1.177S%26plus%3B0.576D%26plus%3B1.715V%26plus%3B0.032A-1.059F-0.499%28S%5Ccdot%26space%3BD%29)<br>
 
 &emsp;&emsp;于是对于车辆遭遇车祸时
+* 若乘客系好了安全带但是气囊未弹出，其生存概率为<br>
+![](https://latex.codecogs.com/gif.latex?%5Chat%20P%28dead%3D1%29%3D%5Cfrac%7Bexp%28-11.431&plus;1.715V&plus;0.032A-1.059F%29%7D%7B%281&plus;exp%28-11.431&plus;1.715V&plus;0.032A-1.059F%29%7D)<br>
+
+* 若乘客未系安全带同时气囊也未能弹出，其生存概率为<br>
+![](https://latex.codecogs.com/gif.latex?%5Chat%20P%28dead%3D1%29%3D%5Cfrac%7Bexp%28-10.254&plus;1.715V&plus;0.032A-1.059F%29%7D%7B1&plus;exp%28-10.254&plus;1.715V&plus;0.032A-1.059F%29%7D)<br>
+
+* 若乘客系好了安全带且气囊正常弹出，其生存概率为<br>
+![](https://latex.codecogs.com/gif.latex?%5Chat%20P%28dead%3D1%29%3D%5Cfrac%7Bexp%28-11.354&plus;1.715V&plus;0.032A-1.059F%29%7D%7B1&plus;exp%28-11.354&plus;1.715V&plus;0.032A-1.059F%29%7D)<br>
+
+* 若乘客未系安全带但是气囊正常弹出，其生存概率为<br>
+![](https://latex.codecogs.com/gif.latex?%5Chat%20P%28dead%3D1%29%3D%5Cfrac%7Bexp%28-9.678&plus;1.715V&plus;0.032A-1.059F%29%7D%7B1&plus;exp%28-9.678&plus;1.715V&plus;0.032A-1.059F%29%7D)<br>
+
+&emsp;&emsp;然后可以根据上面的式子对死亡概率进行预测，比如一名35岁的驾驶员系安全带后行车中遇高速度撞击气囊弹出时(V=5,A=35,F=1)的死亡概率约为0.0619。
+
+
+## 模型评估
+
+
+&emsp;&emsp;模型的AUC为0.8786，说明其有较强的预测能力，下面给出的是该模型在训练集上的ROC曲线：
+
+![image](https://github.com/Huang-Cc/Driving-safety-analysis/blob/master/00002.png)
+
+&emsp;&emsp;为了观察模型在测试集上的表现，画出了模型对测试集的ROC曲线，与上面的曲线相比较，两者非常接近。
+
+![image](https://github.com/Huang-Cc/Driving-safety-analysis/blob/master/00003.png)
+
+将训练集中的死亡率θ ̂_dead=n_(dead=1)/n作为阈值π_0,带入测试集的数据到模型中获得预测值并对其进行分类，得到以下分类表：
+
+
+
+&emsp;&emsp;通过计算得出准确率为0.9136，表明该模型的在测试集上的表现仍然不错，能很好地反映数据的总体情况。 
+
+
+## 结果与讨论
+
+
+&emsp;&emsp;通过对车祸数据建模我们可以了解到，安全带与安全气囊确实在车祸中发挥了它们的作用。从参数估计的结果来看，系好了安全带可以显著地降低乘客在遭遇车祸时的死亡优势，而如果只依靠安全气囊不系安全带则不能给乘客提供保护，反而会增加其死亡的风险，系好安全带能减少气囊弹出所带来的对乘客的伤害。具体来说的话，如果车祸时乘客系好了安全带，且安全气囊正常弹出的话，其死亡的优势会是不系安全带气囊不弹出时的0.333倍，即降低66.7%；如果车祸时乘客系了安全带，但是安全气囊未弹出的话，其死亡的优势是不系安全带的0.308倍，即降低69.2%；再者如果乘客当时没有系安全带，但是气囊弹出，其死亡的优势会是气囊不弹出的1.780倍，即增加78%！获取具体的死亡概率可以带入具体的数据进行预测。<br>
+&emsp;&emsp;为什么安全气囊会有如此反常的效果呢？结合任务A列联表3的分析结果，这可能与撞击时的速度有关，还可能与汽车生产年份(yearVeh)较早，安全气囊技术不够成熟有一定关系。<br>
+&emsp;&emsp;额外的，我们还能从模型中发现更多的信息，如乘客年龄会略微增加车祸的死亡优势(3.25%/岁)；高撞击速度会非常显著地增加乘客的死亡优势(每15km/h会增加5.556倍)，正面撞击相比于侧面会减少乘客的死亡优势(0.347倍)。<br>
+&emsp;&emsp;综上所述，安全带对于驾驶员来说是必要的，它能够降低车祸时的死亡概率，而安全气囊不一定能给予乘客安全保护，某些时候反而会增加对乘客的伤害。但安全气囊的初衷本就是为了乘客的安全，相信已经经过了十几年的改进与发展，其可以在事故时给人提供额外的保护。所以，安全驾车，系好安全带，避免超速行驶这些主观要素是我们可以遵守的，保护自身驾驶安全的重要保证。<br>
+
+
+
+
+
+
+
+
+
+
+
