@@ -1,0 +1,189 @@
+---
+title: "Driving-safety-analysis"
+author: 'Huang-Cc'
+output: 
+  html_notebook:
+    toc: yes
+---
+
+
+## 导入数据
+```{r message=FALSE}
+library(PropCIs)
+library(dplyr)
+library(pROC)
+data1 <- read.csv('projectData2.csv',header = T)
+data1 <- data1[,-1]
+head(data1)
+```
+
+## 数据建模
+
+* 对数据表的一些变量进行重新编码
+```{r}
+data1$seatbelt <- recode(data1$seatbelt,none = 0,belted = 1)
+data1$dead <- recode(data1$dead,alive = 0,dead = 1)
+data1$V <- recode(data1$dvcat,'1-9' = 1,'10-24' = 2,'25-39' = 3,'40-54' = 4,'55+' = 5)
+data1 <- subset(data1,select = -c(caseid))
+```
+
+* 划分训练集与测试集
+```{r}
+set.seed(1)
+sub<-sample(1:nrow(data1),round(nrow(data1)*0.8))
+data_train<-data1[sub,]#取2/3的数据做训练集
+data_test<-data1[-sub,]#取1/3的数据做测试集
+```
+
+* 统计数据量
+```{r}
+nrow(data_train)
+nrow(data_test)
+```
+
+* 模型变量选择
+
+最初的模型为dead ~ seatbelt + deploy,比较auc的值逐步添加变量到模型中
+
+* dead ~ seatbelt + deploy + ?
+```{r message=FALSE}
+m1 <- glm(dead ~ seatbelt + deploy,weights = weight,data = data_train,family = binomial)
+m2 <- glm(dead ~ seatbelt + deploy + V,weights = weight,data = data_train,family = binomial)
+m3 <- glm(dead ~ seatbelt + deploy + frontal,weights = weight,data = data_train,family = binomial)
+m4 <- glm(dead ~ seatbelt + deploy + ageOFocc,weights = weight,data = data_train,family = binomial)
+m5 <- glm(dead ~ seatbelt + deploy + gender,weights = weight,data = data_train,family = binomial)
+m6 <- glm(dead ~ seatbelt + deploy + occRole,weights = weight,data = data_train,family = binomial)
+roc1 <- roc(data_train$dead,fitted(m1))
+roc2 <- roc(data_train$dead,fitted(m2))
+roc3 <- roc(data_train$dead,fitted(m3))
+roc4 <- roc(data_train$dead,fitted(m4))
+roc5 <- roc(data_train$dead,fitted(m5))
+roc6 <- roc(data_train$dead,fitted(m6))
+data.frame(
+  Model = c('----','+ V','+ frontal','+ ageOFocc','+ gender','+ occRole'),
+  AUC = c(auc(roc1),auc(roc2),auc(roc3),auc(roc4),auc(roc5),auc(roc6))
+)
+```
+
+* dead ~ seatbelt + deploy + V + ?
+```{r message=FALSE}
+m7 <- glm(dead ~ seatbelt + deploy + V + frontal,weights = weight,data = data_train,family = binomial)
+m8 <- glm(dead ~ seatbelt + deploy + V + ageOFocc,weights = weight,data = data_train,family = binomial)
+m9 <- glm(dead ~ seatbelt + deploy + V + gender,weights = weight,data = data_train,family = binomial)
+m10 <- glm(dead ~ seatbelt + deploy + V + occRole,weights = weight,data = data_train,family = binomial)
+roc7 <- roc(data_train$dead,fitted(m7))
+roc8 <- roc(data_train$dead,fitted(m8))
+roc9 <- roc(data_train$dead,fitted(m9))
+roc10 <- roc(data_train$dead,fitted(m10))
+data.frame(
+  Model = c('+ frontal','+ ageOFocc','+ gender','+ occRole'),
+  AUC = c(auc(roc7),auc(roc8),auc(roc9),auc(roc10))
+)
+```
+
+* dead ~ seatbelt + deploy + V + ageOFocc + ?
+```{r message=FALSE}
+m11 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + frontal,weights = weight,data = data_train,family = binomial)
+m12 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + gender,weights = weight,data = data_train,family = binomial)
+m13 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + occRole,weights = weight,data = data_train,family = binomial)
+roc11 <- roc(data_train$dead,fitted(m11))
+roc12 <- roc(data_train$dead,fitted(m12))
+roc13 <- roc(data_train$dead,fitted(m13))
+data.frame(
+  Model = c('+ frontal','+ gender','+ occRole'),
+  AUC = c(auc(roc11),auc(roc12),auc(roc13))
+)
+```
+
+* dead ~ seatbelt + deploy + V + ageOFocc + frontal + ?
+```{r message=FALSE}
+m14 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + frontal + gender,weights = weight,data = data_train,family = binomial)
+m15 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + frontal + occRole,weights = weight,data = data_train,family = binomial)
+roc14 <- roc(data_train$dead,fitted(m14))
+roc15 <- roc(data_train$dead,fitted(m15))
+data.frame(
+  Model = c('+ gender','+ occRole'),
+  AUC = c(auc(roc14),auc(roc15))
+)
+```
+
+* 变量选择过程ROC曲线
+```{r}
+plot(roc1,legacy.axes = T,col = 'grey',max.auc.polygon=TRUE)
+plot(roc2,legacy.axes = T,add = T,col = 'pink')
+plot(roc8,legacy.axes = T,add = T,col = 'magenta')
+plot(roc11,legacy.axes = T,add = T,col = 'blue')
+legend('bottomright',legend = c('m1','m2','m8','m11'),col = c('grey','pink','magenta','blue'),lty = c(1,1))
+```
+
+* 模型m11的参数估计与显著性
+```{r}
+summary(m11)
+```
+
+
+* 加入交互项seatbelt:deploy
+```{r}
+m16 <- glm(dead ~ seatbelt + deploy + V + ageOFocc + frontal + seatbelt:deploy,weights = weight,data = data_train,family = binomial)
+summary(m16)
+```
+```{r message=FALSE}
+roc16 <- roc(data_train$dead,fitted(m16))
+auc(roc16)
+```
+
+* 训练集ROC曲线
+```{r}
+plot(roc16,legacy.axes = T,col = 'black',print.auc = T,auc.polygon=TRUE,auc.polygon.col="skyblue",max.auc.polygon=TRUE)
+```
+
+* 测试集ROC曲线
+```{r message=FALSE}
+pre <- predict(m16,type = 'response',newdata = data_test)
+roc_test <- roc(data_test$dead,pre)
+plot(roc_test,legacy.axes = T,col = 'black',print.auc = T,auc.polygon=TRUE,auc.polygon.col="skyblue",max.auc.polygon=TRUE)
+```
+
+* 混淆矩阵
+```{r}
+pi_hat <- pre
+pi_0 <- sum(data_train$dead==1)/nrow(data_train)
+y_hat <- pi_hat > pi_0
+table4 <- table(data_test$dead,y_hat)
+table4
+acc <- (table4[1]+table4[4])/(table4[1]+table4[2]+table4[3]+table4[4])
+acc
+```
+
+* 解释系数
+```{r}
+coef(m16) %>% exp()
+```
+
+## 额外的研究
+```{r}
+table3 <- xtabs(weight ~ deploy + dead + V,data = data1)
+ftable(table3,col.vars = 'dead',row.vars = c('V','deploy'))
+```
+
+* 计算不同撞击车速条件下，车辆安全气囊有无展开与出车祸时乘员生存的条件优势比
+```{r}
+theta1 <- (640244*134)/(55820*6)
+theta2 <- (6200979*1604)/(1930773*4405)
+theta3 <- (1901520*3811)/(753221*17122)
+theta4 <- (753221*11020)/(343242*3811)
+theta5 <- (77238*7245)/(29028*14693)
+cbind(theta1,theta2,theta3,theta4,theta5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
