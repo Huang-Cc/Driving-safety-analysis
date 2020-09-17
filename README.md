@@ -61,10 +61,15 @@
 (模型中S表示seatbelt，DP表示deploy，AGE表示ageOfocc，F表示frontal，下同。)<br>
 &emsp;&emsp;该模型中参数估计与显著性如下:
 
-
-
-
-
+|&nbsp;|Estimate|Std.Error|Z value|Pr(\>\|z\|)|&nbsp;|
+| ---- | ---- | ---- | ---- | ---- | ---- |
+|(Intercept)|-10.182278|0.021967|-463.54|<2e-16|*** |
+|seatbelt|-1.318616|0.009697|-135.99|<2e-16|*** |
+|deploy|0.347572|0.010746|32.34|<2e-16|*** |
+|V|1.709375|0.004615|370.38|\<2e-16|*** |
+|ageOFocc|0.032219|0.000234|137.68|<2e-16|*** |
+|frontal|-1.059600|0.009770|-108.46|<2e-16|*** |
+|AUC：0.8791|
 
 &emsp;&emsp;可以看到所有变量的p值都远小于0.05，在模型中都是显著的。所以对应的模型为<br>
 ![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D-10.182-1.319S%26plus%3B0.348DP%26plus%3B1.709V%26plus%3B0.032AGE-1.060F)<br>
@@ -73,9 +78,16 @@
 ![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D%5Calpha%26plus%3B%5Cbeta_1%26space%3BS%26plus%3B%5Cbeta_2%26space%3BDP%26plus%3B%5Cbeta_3%26space%3BV%26plus%3B%5Cbeta_4%26space%3BAGE%26plus%3B%5Cbeta_5%26space%3BF%26plus%3B%5Cgamma%28S%5Ccdot%26space%3BDP%29)<br>
 模型变量显著性如下：
 
-
-
-
+|&nbsp;|Estimate|Std.Error|Z value|Pr(\>\|z\|)|&nbsp;|
+| ---- | ---- | ---- | ---- | ---- | ---- |
+|(Intercept)|-10.2540534|0.0222601|-460.65|<2e-16|*** |
+|seatbelt|-1.1769466|0.0113276|-103.90|<2e-16|*** |
+|deploy|0.5764661|0.0142034|40.59|<2e-16|*** |
+|V|1.7148719|0.0046248|370.80|<2e-16|*** |
+|ageOFocc|0.0319753|0.0002335|136.91|<2e-16|*** |
+|frontal|-1.0594763|0.0098014|-108.09|<2e-16|*** |
+|seatbelt:deploy|-0.4992505|0.0211646|-23.59|<2e-16|*** |
+|AUC：0.8798|
 
 &emsp;&emsp;所有的变量都是显著的。模型拟合结果为：<br>
 ![](https://latex.codecogs.com/gif.latex?Logit%5B%5Chat%26space%3BP%28dead%3D1%29%5D%3D-10.254-1.177S%26plus%3B0.576D%26plus%3B1.715V%26plus%3B0.032A-1.059F-0.499%28S%5Ccdot%26space%3BD%29)<br>
@@ -107,9 +119,14 @@
 
 ![image](https://github.com/Huang-Cc/Driving-safety-analysis/blob/master/00003.png)
 
-将训练集中的死亡率θ ̂_dead=n_(dead=1)/n作为阈值π_0,带入测试集的数据到模型中获得预测值并对其进行分类，得到以下分类表：
+将训练集中的死亡率![](https://latex.codecogs.com/gif.latex?%5Chat%20%5Ctheta_%7Bdead%7D%3D%5Cfrac%7Bn_%7Bdead%3D1%7D%7D%7Bn%7D)作为阈值![](https://latex.codecogs.com/gif.latex?%5Cpi_0),带入测试集的数据到模型中获得预测值并对其进行分类，得到以下分类表：
 
-
+|&nbsp;|&nbsp;|![](https://latex.codecogs.com/gif.latex?%5Chat%20y)|
+| ---- | ---- | ---- |
+|&nbsp;|FALSE|TRUE|
+|0|4666|314|
+|1|139|124|
+|Accuracy：0.9135991|
 
 &emsp;&emsp;通过计算得出准确率为0.9136，表明该模型的在测试集上的表现仍然不错，能很好地反映数据的总体情况。 
 
