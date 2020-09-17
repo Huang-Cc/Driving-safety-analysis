@@ -70,15 +70,18 @@
 &emsp;&emsp;可以看到所有变量的p值都远小于0.05，在模型中都是显著的。所以对应的模型为
 
 ![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=-10.182-1.319S&plus;0.348DP&plus;1.709V&plus;0.032AGE-1.060F)<br>
+
 &emsp;&emsp;接下来继续扩充模型，添加变量间的交互效应项，观察变量显著性和模型拟合情况。考虑到安全带与气囊展开时可能的共同作用，尝试在模型中加入撞击速度seatbelt与deploy的交互项
 
 ![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=\alpha&plus;\beta_1&space;S&plus;\beta_2&space;DP&plus;\beta_3&space;V&plus;\beta_4&space;AGE&plus;\beta_5&space;F&plus;\gamma(S\cdot&space;DP))<br>
-&emsp;&emsp;模型变量显著性如下：
+模型变量显著性如下：
 
 
 
 
 
 &emsp;&emsp;所有的变量都是显著的。模型拟合结果为：
-![](https://latex.codecogs.com/svg.latex?logit[\hat&space;P(dead=1)]=-10.254-1.177S&plus;0.576D&plus;1.715V&plus;0.032A-1.059F-0.499(S\cdot&space;D))<br>
+
+![](https://latex.codecogs.com/svg.latex?Logit[\hat&space;P(dead=1)]=-10.254-1.177S&plus;0.576D&plus;1.715V&plus;0.032A-1.059F-0.499(S\cdot&space;D))<br>
+
 &emsp;&emsp;于是对于车辆遭遇车祸时
